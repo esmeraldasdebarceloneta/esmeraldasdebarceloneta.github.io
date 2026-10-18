@@ -125,6 +125,18 @@ section.block.alt{background:linear-gradient(180deg,var(--negro) 0,var(--negro2)
 .tag>span{display:inline-block;transform:skewX(10deg)}
 @media(max-width:860px){.cards{grid-template-columns:1fr}}
 
+/* noticias */
+.news-featured{background:var(--negro3);border:1px solid rgba(255,255,255,.08);border-left:4px solid var(--dorado);
+  padding:1.8rem;margin-bottom:1.2rem;transition:transform .25s,border-color .25s,box-shadow .25s}
+.news-featured:hover{transform:translateY(-6px);border-color:rgba(216,177,102,.4);box-shadow:0 20px 44px rgba(0,0,0,.5)}
+.news-featured h3{font-family:var(--display);font-style:italic;font-size:1.7rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.5rem}
+.news-featured p{color:var(--gris);font-size:.98rem;line-height:1.65;max-width:46rem}
+.news-meta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+.news-date{color:var(--dorado);font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.news-body{padding-top:1.6rem}
+.news-cards{grid-template-columns:repeat(2,1fr)}
+@media(max-width:860px){.news-cards{grid-template-columns:1fr}}
+
 /* tienda */
 .drop-banner{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin:0 0 1.6rem;
   background:linear-gradient(100deg,var(--rojo2),var(--rojo));border:1px solid rgba(216,177,102,.45);
@@ -269,6 +281,7 @@ footer small{color:#77777f;display:block;margin-top:.4rem;line-height:1.7}
   <div class="navlinks" id="navlinks">
     <a class="nl" href="#identidad">Identidad</a>
     <a class="nl" href="#equipo">Equipo</a>
+    <a class="nl" href="#noticias">Noticias</a>
     <a class="nl" href="#tienda">Tienda</a>
     <a class="nl" href="#calendario">Calendario</a>
     <a class="nl" href="#contacto">Contacto</a>
@@ -347,6 +360,38 @@ footer small{color:#77777f;display:block;margin-top:.4rem;line-height:1.7}
       <div class="card rv">
         <div class="jersey">26</div>
         <div class="cbody"><h3>Calendario y resultados</h3><p>Juegos, sedes y resultados, actualizados cada semana.</p><span class="tag"><span>Por anunciar</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="noticias">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="kicker">Noticias</p>
+      <h2>Actualidad <em>Esmeralda</em></h2>
+      <div class="rule"></div>
+      <p>Anuncios oficiales y novedades del equipo.</p>
+    </div>
+    <article class="news-featured rv">
+      <div class="news-meta"><span class="tag"><span>Anuncio oficial</span></span><span class="news-date">Octubre 2026</span></div>
+      <h3>Esmeraldas anuncian su Gerente General</h3>
+      <p>La organizaci&oacute;n present&oacute; oficialmente a su Gerente General, quien liderar&aacute; las operaciones del equipo en su temporada inaugural en Barceloneta.</p>
+    </article>
+    <div class="cards news-cards">
+      <div class="card rv">
+        <div class="cbody news-body">
+          <div class="news-meta"><span class="tag"><span>Anuncio oficial</span></span><span class="news-date">Octubre 2026</span></div>
+          <h3>Nueva Directora de Enlace y Desarrollo de Jugadoras</h3>
+          <p>El equipo suma a su administraci&oacute;n una figura dedicada al enlace directo con las jugadoras: su desarrollo, bienestar y comunicaci&oacute;n con el cuerpo t&eacute;cnico y la gerencia.</p>
+        </div>
+      </div>
+      <div class="card rv">
+        <div class="cbody news-body">
+          <div class="news-meta"><span class="tag"><span>Equipo</span></span><span class="news-date">Pr&oacute;ximamente</span></div>
+          <h3>Tryouts rumbo a la temporada 2027</h3>
+          <p>Las Esmeraldas celebrar&aacute;n sus tryouts en el Auditorio Sixto Escobar como parte de la conformaci&oacute;n del equipo. Fechas y detalles se anunciar&aacute;n muy pronto.</p>
+        </div>
       </div>
     </div>
   </div>

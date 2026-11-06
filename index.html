@@ -324,18 +324,17 @@ section.block.alt{background:linear-gradient(180deg,var(--negro) 0,var(--negro2)
 .spon-head .rule{margin-left:auto;margin-right:auto}
 .spon-head p{color:var(--gris);margin-top:1rem}
 .spon-marquee{margin:1.8rem auto 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-.spon-mtrack{display:flex;width:max-content;animation:sponScroll 30s linear infinite}
+.spon-mtrack{display:flex;width:max-content;will-change:transform}
 .spon-half{display:flex;gap:18px;padding-right:18px;flex:0 0 auto}
 .spon-card{height:96px;width:250px;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.35rem;background:linear-gradient(160deg,var(--negro3),var(--negro2));border:1.5px dashed rgba(216,177,102,.45);box-sizing:border-box;padding:12px 16px;text-align:center}
 .spon-card svg{width:22px;height:22px;stroke:var(--dorado);fill:none;stroke-width:1.8}
 .spon-card b{font-family:var(--display);font-style:italic;text-transform:uppercase;letter-spacing:.08em;font-size:1.02rem;color:#fff;font-weight:400}
 .spon-card span{font-size:.68rem;font-weight:800;letter-spacing:.26em;text-transform:uppercase;color:var(--dorado)}
-@keyframes sponScroll{to{transform:translateX(-50%)}}
-.spon-marquee:hover .spon-mtrack{animation-play-state:paused}
+.spon-mtrack.paused{animation-play-state:paused}
 .spon-cta{text-align:center;margin-top:1.5rem;color:var(--gris);font-size:.95rem}
 .spon-cta a{color:var(--dorado2);font-weight:800}
 @media(max-width:639px){.spon-card{height:88px;width:205px}}
-@media(prefers-reduced-motion:reduce){.spon-mtrack{animation:none}}
+
 
 /* boletos */
 .ticket-panel{position:relative;background:linear-gradient(120deg,var(--rojo2),var(--rojo) 60%,#a3042b);
@@ -720,7 +719,7 @@ footer small{color:#77777f;display:block;margin-top:.4rem;line-height:1.7}
     </div>
   </div>
   <div class="spon-marquee rv" id="sponMarquee">
-    <div class="spon-mtrack">
+    <div class="spon-mtrack" id="sponMtrack">
       <div class="spon-half">
         <div class="spon-card"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l3 5-9 13L3 8l3-5z"/><path d="M3 8h18"/></svg><b>Ausp&iacute;ciate aqu&iacute;</b><span>Espacio disponible</span></div>
         <div class="spon-card"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l3 5-9 13L3 8l3-5z"/><path d="M3 8h18"/></svg><b>Tu marca aqu&iacute;</b><span>Auspiciador oficial</span></div>
@@ -1054,6 +1053,38 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
     window.addEventListener('resize', function(){ nBuild(); nGo(nIdx); });
     nBuild(); nGo(0); nStart();
   }
+})();
+</script>
+<script>
+/* Cinta de auspiciadores: animación en píxeles exactos, como en El Vacilón.
+   En iPad, translateX(-50%) se calculaba mal y la tira no se movía bien;
+   aquí se mide el ancho real de media tira y se anima justo ese ancho. */
+(function(){
+  var track=document.getElementById("sponMtrack"), box=document.getElementById("sponMarquee");
+  if(!track||!box) return;
+  function unpause(){ track.classList.remove("paused"); }
+  box.addEventListener("touchstart",function(){ track.classList.add("paused"); },{passive:true});
+  box.addEventListener("touchend",unpause);
+  box.addEventListener("touchcancel",unpause);
+  document.addEventListener("visibilitychange",function(){ if(!document.hidden) unpause(); });
+  window.addEventListener("pageshow",unpause);
+  var pxStyle=document.getElementById("sponPxCss");
+  if(!pxStyle){ pxStyle=document.createElement("style"); pxStyle.id="sponPxCss"; document.head.appendChild(pxStyle); }
+  function tuneSpon(){
+    var half=track.children[0]; if(!half) return;
+    var shift=Math.round(half.getBoundingClientRect().width);
+    if(!(shift>0)) return;
+    var dur=Math.max(8,shift/89.3).toFixed(2);
+    pxStyle.textContent="@keyframes sponScrollPx{to{transform:translateX(-"+shift+"px)}}";
+    track.style.animationName="sponScrollPx";
+    track.style.animationDuration=dur+"s";
+    track.style.animationTimingFunction="linear";
+    track.style.animationIterationCount="infinite";
+  }
+  tuneSpon();
+  window.addEventListener("load",tuneSpon);
+  var rz=null;
+  window.addEventListener("resize",function(){ clearTimeout(rz); rz=setTimeout(tuneSpon,250); });
 })();
 </script>
 </body>

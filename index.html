@@ -1056,35 +1056,32 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
 })();
 </script>
 <script>
-/* Cinta de auspiciadores: animación en píxeles exactos, como en El Vacilón.
-   En iPad, translateX(-50%) se calculaba mal y la tira no se movía bien;
-   aquí se mide el ancho real de media tira y se anima justo ese ancho. */
+/* Cinta de auspiciadores: movimiento directo cuadro a cuadro.
+   Las animaciones CSS (porcentaje y por píxeles) no arrancaban en el iPad;
+   aquí la cinta se desplaza con transform en cada cuadro, sin depender de
+   keyframes: se mueve siempre, a la velocidad de El Vacilón (89.3 px/s). */
 (function(){
-  var track=document.getElementById("sponMtrack"), box=document.getElementById("sponMarquee");
-  if(!track||!box) return;
-  function unpause(){ track.classList.remove("paused"); }
-  box.addEventListener("touchstart",function(){ track.classList.add("paused"); },{passive:true});
-  box.addEventListener("touchend",unpause);
-  box.addEventListener("touchcancel",unpause);
-  document.addEventListener("visibilitychange",function(){ if(!document.hidden) unpause(); });
-  window.addEventListener("pageshow",unpause);
-  var pxStyle=document.getElementById("sponPxCss");
-  if(!pxStyle){ pxStyle=document.createElement("style"); pxStyle.id="sponPxCss"; document.head.appendChild(pxStyle); }
-  function tuneSpon(){
-    var half=track.children[0]; if(!half) return;
-    var shift=Math.round(half.getBoundingClientRect().width);
-    if(!(shift>0)) return;
-    var dur=Math.max(8,shift/89.3).toFixed(2);
-    pxStyle.textContent="@keyframes sponScrollPx{to{transform:translateX(-"+shift+"px)}}";
-    track.style.animationName="sponScrollPx";
-    track.style.animationDuration=dur+"s";
-    track.style.animationTimingFunction="linear";
-    track.style.animationIterationCount="infinite";
-  }
-  tuneSpon();
-  window.addEventListener("load",tuneSpon);
+  var track=document.getElementById("sponMtrack");
+  if(!track) return;
+  var half=track.children[0]; if(!half) return;
+  var SPEED=89.3, shift=0, x=0, last=0;
+  function measure(){ shift=half.offsetWidth||Math.round(half.getBoundingClientRect().width); }
+  measure();
+  window.addEventListener("load",measure);
   var rz=null;
-  window.addEventListener("resize",function(){ clearTimeout(rz); rz=setTimeout(tuneSpon,250); });
+  window.addEventListener("resize",function(){ clearTimeout(rz); rz=setTimeout(measure,200); });
+  function frame(ts){
+    if(!last) last=ts;
+    var dt=(ts-last)/1000; last=ts;
+    if(dt>0.25) dt=0.25;
+    if(shift>0){
+      x-=SPEED*dt;
+      if(-x>=shift) x+=shift;
+      track.style.transform="translateX("+x+"px)";
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 })();
 </script>
 </body>

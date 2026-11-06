@@ -273,6 +273,32 @@ section.block.alt{background:linear-gradient(180deg,var(--negro) 0,var(--negro2)
 .pm-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:1.1rem;flex-wrap:wrap}
 @media(max-width:720px){.pmodal-card{grid-template-columns:1fr}.pmodal .pj{min-height:250px}}
 
+/* registro tryout */
+.reg-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:1.2rem;align-items:stretch}
+.reg-info{background:var(--negro3);border:1px solid rgba(216,177,102,.16);padding:2.2rem}
+.reg-info h3{font-family:var(--display);font-style:italic;font-size:1.6rem;text-transform:uppercase;margin-bottom:1rem}
+.reg-info p{color:var(--gris);line-height:1.75}
+.reg-facts{display:grid;gap:.7rem;margin:1.3rem 0}
+.reg-fact{display:flex;gap:.75rem;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(216,177,102,.14);padding:.85rem 1rem}
+.reg-fact svg{width:20px;height:20px;stroke:var(--dorado);fill:none;stroke-width:1.9;flex:none;margin-top:.1rem}
+.reg-fact b{display:block;color:#fff;font-size:.92rem}
+.reg-fact span{color:var(--gris);font-size:.88rem;line-height:1.45}
+.reg-privacy{font-size:.9rem}
+.reg-card{background:linear-gradient(180deg,var(--negro3),var(--negro2));border:1px solid rgba(216,177,102,.22);padding:2.2rem;box-shadow:0 24px 55px rgba(0,0,0,.35)}
+.reg-form{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.field{display:grid;gap:.42rem}
+.field.full{grid-column:1/-1}
+.field label{font-size:.74rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--dorado2)}
+.field input,.field select{width:100%;background:#0d0d10;border:1.5px solid rgba(216,177,102,.22);color:var(--blanco);padding:.88rem 1rem;font:inherit;font-size:.96rem;outline:none}
+.field input:focus,.field select:focus{border-color:var(--dorado)}
+.field select option{background:#111114;color:var(--blanco)}
+.reg-actions{grid-column:1/-1;display:grid;gap:.75rem}
+.reg-msg{display:none;border:1px solid rgba(216,177,102,.35);background:rgba(216,177,102,.08);color:#f7e7bd;padding:.9rem 1rem;line-height:1.55;font-size:.93rem}
+.reg-msg.show{display:block}
+.reg-msg.err{border-color:rgba(232,38,74,.55);background:rgba(192,5,50,.12);color:#ffd9e2}
+.reg-note{color:var(--gris);font-size:.84rem;line-height:1.55}
+@media(max-width:860px){.reg-grid{grid-template-columns:1fr}.reg-form{grid-template-columns:1fr}.reg-card,.reg-info{padding:1.5rem}}
+
 /* boletos */
 .ticket-panel{position:relative;background:linear-gradient(120deg,var(--rojo2),var(--rojo) 60%,#a3042b);
   transform:skewY(-1.5deg);padding:4.2rem 2rem;overflow:hidden;text-align:center;
@@ -319,6 +345,7 @@ footer small{color:#77777f;display:block;margin-top:.4rem;line-height:1.7}
     <a class="nl" href="#identidad">Identidad</a>
     <a class="nl" href="#equipo">Equipo</a>
     <a class="nl" href="#noticias">Noticias</a>
+    <a class="nl" href="#registro">Registro</a>
     <a class="nl" href="#tienda">Tienda</a>
     <a class="nl" href="#calendario">Calendario</a>
     <a class="nl" href="#contacto">Contacto</a>
@@ -447,6 +474,78 @@ footer small{color:#77777f;display:block;margin-top:.4rem;line-height:1.7}
       </div>
     </div>
     <div class="news-nav"><button class="news-arrow" id="newsPrev" type="button" aria-label="Noticias anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button><div class="news-dots" id="newsDots"></div><button class="news-arrow" id="newsNext" type="button" aria-label="Noticias siguientes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg></button></div>
+  </div>
+</section>
+
+<section class="block alt" id="registro">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="kicker">Tryouts 2027</p>
+      <h2>Registro de <em>jugadoras</em></h2>
+      <div class="rule"></div>
+      <p>Completa el registro para asegurar tu espacio en los tryouts de las Esmeraldas. La informaci&oacute;n se guarda de forma privada para uso interno del equipo.</p>
+    </div>
+    <div class="reg-grid">
+      <div class="reg-info rv">
+        <h3>Antes de registrarte</h3>
+        <p>Este registro nos ayuda a conocer cu&aacute;ntas jugadoras asistir&aacute;n y el perfil deportivo de cada participante antes del tryout.</p>
+        <div class="reg-facts">
+          <div class="reg-fact">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+            <div><b>Fecha y hora</b><span>Por anunciar oficialmente.</span></div>
+          </div>
+          <div class="reg-fact">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.6-7-11a7 7 0 1 1 14 0c0 5.4-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+            <div><b>Lugar</b><span>Auditorio Sixto Escobar.</span></div>
+          </div>
+          <div class="reg-fact">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/></svg>
+            <div><b>Privacidad</b><span>Tu informaci&oacute;n no se publica en la p&aacute;gina. Solo la administraci&oacute;n del equipo podr&aacute; ver los registros.</span></div>
+          </div>
+        </div>
+        <p class="reg-privacy">Al enviar, aceptas que el equipo use tus datos para organizar el tryout y comunicarse contigo sobre esta actividad.</p>
+      </div>
+      <div class="reg-card rv">
+        <form class="reg-form" id="tryoutForm" novalidate>
+          <div class="field full">
+            <label for="regNombre">Nombre completo</label>
+            <input id="regNombre" name="nombre" type="text" autocomplete="name" placeholder="Nombre y apellidos" required maxlength="90">
+          </div>
+          <div class="field">
+            <label for="regPueblo">Pueblo</label>
+            <input id="regPueblo" name="pueblo" type="text" autocomplete="address-level2" placeholder="Ej. Barceloneta" required maxlength="60">
+          </div>
+          <div class="field">
+            <label for="regTelefono">N&uacute;mero de tel&eacute;fono</label>
+            <input id="regTelefono" name="telefono" type="tel" autocomplete="tel" inputmode="tel" placeholder="(787) 000-0000" required maxlength="24">
+          </div>
+          <div class="field full">
+            <label for="regPosicion">Posici&oacute;n que juega</label>
+            <select id="regPosicion" name="posicion" required>
+              <option value="">Selecciona una posici&oacute;n</option>
+              <option value="Base / Armadora (PG)">Base / Armadora (PG)</option>
+              <option value="Escolta (SG)">Escolta (SG)</option>
+              <option value="Alera (SF)">Alera (SF)</option>
+              <option value="Ala-p&iacute;vot (PF)">Ala-p&iacute;vot (PF)</option>
+              <option value="P&iacute;vot (C)">P&iacute;vot (C)</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="regFotos">&iquest;Autorizas que se te tomen fotograf&iacute;as durante el tryout?</label>
+            <select id="regFotos" name="autoriza_fotos" required>
+              <option value="">Selecciona una opci&oacute;n</option>
+              <option value="si">S&iacute;, autorizo</option>
+              <option value="no">No autorizo</option>
+            </select>
+          </div>
+          <div class="reg-actions">
+            <div class="reg-msg" id="regMsg" role="status" aria-live="polite"></div>
+            <button class="btn btn-rojo" type="submit" id="regSubmit"><span>Enviar registro</span></button>
+            <p class="reg-note">No se publicar&aacute; ninguna lista de participantes. Los datos quedan en una base privada del equipo.</p>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -688,6 +787,27 @@ footer small{color:#77777f;display:block;margin-top:.4rem;line-height:1.7}
       });
     });
   });
+  /* registro de tryouts (base privada) */
+  var TRYOUT_API='https://esmeraldas-api.elvacilondelbsn.workers.dev';
+  var tryoutForm=document.getElementById('tryoutForm'),regMsg=document.getElementById('regMsg'),regSubmit=document.getElementById('regSubmit');
+  function regShow(msg,isErr){if(!regMsg)return;regMsg.textContent=msg;regMsg.classList.add('show');regMsg.classList.toggle('err',!!isErr)}
+  function regClean(id){var el=document.getElementById(id);return el?el.value.trim():''}
+  if(tryoutForm){
+    tryoutForm.addEventListener('submit',function(e){
+      e.preventDefault();
+      var data={nombre:regClean('regNombre'),pueblo:regClean('regPueblo'),telefono:regClean('regTelefono'),posicion:regClean('regPosicion'),autoriza_fotos:regClean('regFotos')};
+      var phoneDigits=data.telefono.replace(/[^0-9]/g,'');
+      if(!data.nombre||!data.pueblo||!data.telefono||!data.posicion||!data.autoriza_fotos){regShow('Completa todos los campos antes de enviar el registro.',true);return}
+      if(phoneDigits.length<10){regShow('Escribe un número de teléfono válido de 10 dígitos.',true);return}
+      if(!TRYOUT_API||TRYOUT_API.indexOf('__TRYOUT')===0){regShow('El registro en línea se activará cuando se anuncie oficialmente el tryout. Tu información no fue enviada.',true);return}
+      regSubmit.disabled=true;regShow('Enviando tu registro...',false);
+      fetch(TRYOUT_API+'/api/tryouts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+        .then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(!r.ok||!d.ok)throw new Error(d.error||'No se pudo enviar');return d})})
+        .then(function(){tryoutForm.reset();regShow('Registro recibido. Gracias por registrarte para los tryouts de las Esmeraldas.',false)})
+        .catch(function(err){regShow(err.message||'No se pudo enviar el registro. Inténtalo nuevamente.',true)})
+        .finally(function(){regSubmit.disabled=false});
+    });
+  }
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
   document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
 })();

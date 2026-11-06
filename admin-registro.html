@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Esmeraldas — Registros Tryout (Privado)</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root{
+  --bg:#0B0B0D; --surface:#15151a; --surface2:#1d1d24; --line:#2b2b34;
+  --rojo:#C00532; --rojo2:#E8264A; --dorado:#D8B166; --dorado2:#f0d090;
+  --text:#f4f4f5; --muted:#a9a9b3; --ok:#37d67a; --radius:16px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+body{margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.5;}
+.wrap{max-width:760px; margin:0 auto; padding:0 16px 80px;}
+header.top{border-bottom:1px solid var(--line); padding:14px 16px; display:flex; align-items:center; gap:12px;}
+header.top .t{font-weight:800; letter-spacing:.06em; font-size:15px;}
+header.top .t small{display:block; font-weight:500; color:var(--muted); font-size:11px; letter-spacing:.14em;}
+h1{font-size:clamp(24px,5vw,32px); margin:26px 0 6px;}
+.sub{color:var(--muted); margin:0 0 20px; font-size:14px;}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px; margin-bottom:14px;}
+.card h2{margin:0 0 8px; font-size:17px;}
+.btn{display:inline-block; border:none; cursor:pointer; border-radius:12px; padding:12px 20px;
+  font-size:15px; font-weight:800; font-family:inherit; background:linear-gradient(135deg,var(--rojo2),var(--rojo)); color:#fff; text-align:center;}
+.btn:disabled{opacity:.5;}
+.btn-danger{background:transparent; border:1.5px solid var(--rojo2); color:var(--rojo2);
+  padding:8px 14px; font-size:13px; border-radius:10px; cursor:pointer; font-family:inherit;}
+.btn-ghost{background:transparent; border:1px solid var(--line); color:var(--muted);
+  padding:10px 16px; font-size:13px; border-radius:10px; cursor:pointer; font-family:inherit;}
+input{width:100%; background:var(--surface2); border:1.5px solid var(--line); border-radius:10px;
+  color:var(--text); padding:12px; font-size:15px; font-family:inherit; margin-bottom:10px;}
+input:focus{outline:none; border-color:var(--dorado);}
+.err{color:var(--rojo2); font-size:13px; min-height:20px; margin:6px 0;}
+.hidden{display:none !important;}
+.summary{display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+.sum{flex:1; min-width:100px; background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:12px; text-align:center;}
+.sum .v{font-size:24px; font-weight:800; color:var(--dorado2);}
+.sum .l{font-size:11px; color:var(--muted); letter-spacing:.1em; text-transform:uppercase;}
+.posrow{display:flex; justify-content:space-between; padding:7px 2px; border-bottom:1px dashed var(--line); font-size:14px;}
+.posrow:last-child{border-bottom:none;}
+.posrow b{color:var(--dorado2);}
+.reg{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; margin-bottom:10px;}
+.reg .rh{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+.reg .rn{font-weight:800; font-size:16px;}
+.reg .rt{font-size:12px; color:var(--muted); white-space:nowrap;}
+.reg .rd{font-size:14px; color:var(--muted); margin-top:4px; line-height:1.65;}
+.reg .rd b{color:var(--text); font-weight:600;}
+.pill{display:inline-block; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  padding:4px 10px; border-radius:99px; border:1px solid var(--line);}
+.pill.si{color:var(--ok); border-color:rgba(55,214,122,.5);}
+.pill.no{color:var(--rojo2); border-color:rgba(232,38,74,.5);}
+.reg .rf{display:flex; justify-content:space-between; align-items:center; margin-top:10px; gap:10px; flex-wrap:wrap;}
+.empty{color:var(--muted); text-align:center; padding:30px 10px; font-size:14px;}
+.topbar{display:flex; justify-content:space-between; align-items:center; margin:18px 0 4px;}
+.topbar h1{margin:0;}
+a.tel{color:var(--dorado2); text-decoration:none; font-weight:700;}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="t">ESMERALDAS DE BARCELONETA<small>REGISTROS DE TRYOUT — PANEL PRIVADO</small></div>
+</header>
+<div class="wrap">
+
+  <!-- LOGIN -->
+  <div id="loginView">
+    <h1>Entrar</h1>
+    <p class="sub">Panel privado de registros del tryout. La información de las jugadoras no es pública.</p>
+    <div class="card">
+      <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username">
+      <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password">
+      <div class="err" id="loginErr"></div>
+      <button class="btn" id="loginBtn" style="width:100%;">Entrar</button>
+    </div>
+  </div>
+
+  <!-- PANEL -->
+  <div id="panelView" class="hidden">
+    <div class="topbar">
+      <h1>Registros</h1>
+      <button class="btn-ghost" id="logoutBtn">Salir</button>
+    </div>
+    <p class="sub">Cuántas jugadoras se han registrado y el perfil de cada una.</p>
+    <div class="summary">
+      <div class="sum"><div class="v" id="sumTotal">–</div><div class="l">Registradas</div></div>
+      <div class="sum"><div class="v" id="sumFotosSi">–</div><div class="l">Autorizan fotos</div></div>
+      <div class="sum"><div class="v" id="sumFotosNo">–</div><div class="l">No autorizan</div></div>
+    </div>
+    <div class="card">
+      <h2>Por posición</h2>
+      <div id="posList"></div>
+    </div>
+    <input type="text" id="filterTxt" placeholder="Buscar por nombre, pueblo o posición...">
+    <div id="regsList"></div>
+  </div>
+
+</div>
+
+<script>
+const API = "https://esmeraldas-api.elvacilondelbsn.workers.dev";
+const $ = id => document.getElementById(id);
+let ALL = [];
+
+function authHeaders(){
+  const t = localStorage.getItem("esmeraldas_admin_token") || "";
+  return t ? {"Authorization": "Bearer " + t} : {};
+}
+async function api(path, opts){
+  opts = opts || {};
+  opts.headers = Object.assign({}, opts.headers || {}, authHeaders());
+  const r = await fetch(API + path, opts);
+  if(r.status === 401){ logout(); throw new Error("Sesión vencida"); }
+  return r.json();
+}
+
+async function doLogin(){
+  const u = $("loginUser").value.trim(), p = $("loginPass").value;
+  $("loginErr").textContent = "";
+  if(!u || !p){ $("loginErr").textContent = "Escribe usuario y contraseña."; return; }
+  $("loginBtn").disabled = true;
+  try{
+    const r = await fetch(API + "/api/admin/login", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({user: u, pass: p})
+    });
+    const d = await r.json();
+    if(d.ok && d.token){
+      localStorage.setItem("esmeraldas_admin_token", d.token);
+      showPanel();
+    }else{
+      $("loginErr").textContent = "Usuario o contraseña incorrectos.";
+    }
+  }catch(e){ $("loginErr").textContent = "No se pudo conectar. Revisa tu internet."; }
+  $("loginBtn").disabled = false;
+}
+function logout(){
+  localStorage.removeItem("esmeraldas_admin_token");
+  $("panelView").classList.add("hidden");
+  $("loginView").classList.remove("hidden");
+  $("loginPass").value = "";
+}
+function showPanel(){
+  $("loginView").classList.add("hidden");
+  $("panelView").classList.remove("hidden");
+  loadRegs();
+}
+$("loginBtn").addEventListener("click", doLogin);
+$("loginPass").addEventListener("keydown", e=>{ if(e.key === "Enter") doLogin(); });
+$("logoutBtn").addEventListener("click", logout);
+$("filterTxt").addEventListener("input", renderRegs);
+
+function fmtDate(iso){
+  try{
+    const d = new Date(iso);
+    return d.toLocaleString("es-PR", {timeZone:"America/Puerto_Rico", day:"numeric", month:"short", hour:"numeric", minute:"2-digit"});
+  }catch(e){ return ""; }
+}
+function esc(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+async function loadRegs(){
+  try{
+    const d = await api("/api/admin/tryouts");
+    if(!d.ok) throw new Error("err");
+    ALL = d.registrations || [];
+    $("sumTotal").textContent = d.total;
+    $("sumFotosSi").textContent = d.photosYes;
+    $("sumFotosNo").textContent = d.photosNo;
+    const pos = d.byPosition || {};
+    const keys = Object.keys(pos).sort((a,b)=>pos[b]-pos[a]);
+    $("posList").innerHTML = keys.length
+      ? keys.map(k=>'<div class="posrow"><span>'+esc(k)+'</span><b>'+pos[k]+'</b></div>').join("")
+      : '<div class="empty">Todavía no hay registros.</div>';
+    renderRegs();
+  }catch(e){
+    $("regsList").innerHTML = '<div class="empty">No se pudieron cargar los registros.</div>';
+  }
+}
+
+function renderRegs(){
+  const q = ($("filterTxt").value || "").toLowerCase().trim();
+  const list = ALL.filter(r => !q || (r.nombre+" "+r.pueblo+" "+r.posicion).toLowerCase().includes(q));
+  if(!list.length){
+    $("regsList").innerHTML = '<div class="empty">' + (ALL.length ? "Sin resultados para esa búsqueda." : "Todavía no hay registros.") + '</div>';
+    return;
+  }
+  $("regsList").innerHTML = list.map(r =>
+    '<div class="reg">' +
+      '<div class="rh"><span class="rn">' + esc(r.nombre) + '</span><span class="rt">' + esc(fmtDate(r.created_at)) + '</span></div>' +
+      '<div class="rd"><b>Pueblo:</b> ' + esc(r.pueblo) + '<br>' +
+      '<b>Teléfono:</b> <a class="tel" href="tel:' + esc(String(r.telefono).replace(/[^0-9+]/g,"")) + '">' + esc(r.telefono) + '</a><br>' +
+      '<b>Posición:</b> ' + esc(r.posicion) + '</div>' +
+      '<div class="rf"><span class="pill ' + (r.autoriza_fotos ? "si" : "no") + '">' + (r.autoriza_fotos ? "Autoriza fotos" : "No autoriza fotos") + '</span>' +
+      '<button class="btn-danger" data-del="' + r.id + '">Borrar</button></div>' +
+    '</div>'
+  ).join("");
+  $("regsList").querySelectorAll("[data-del]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      if(!confirm("¿Borrar este registro?")) return;
+      btn.disabled = true;
+      try{ await api("/api/admin/tryouts/" + btn.getAttribute("data-del"), {method:"DELETE"}); loadRegs(); }
+      catch(e){ btn.disabled = false; }
+    });
+  });
+}
+
+if(localStorage.getItem("esmeraldas_admin_token")) showPanel();
+</script>
+</body>
+</html>

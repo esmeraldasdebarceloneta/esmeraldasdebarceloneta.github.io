@@ -1175,6 +1175,31 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
     }, {passive:true});
     window.addEventListener('resize', function(){ nBuild(); nGo(nIdx); });
     nBuild(); nGo(0); nStart();
+    // Noticias publicadas desde el panel privado: se cargan en vivo y van primero en la cinta
+    function escHtmlN(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+    fetch('https://esmeraldas-api.elvacilondelbsn.workers.dev/api/news').then(function(r){ return r.json(); }).then(function(d){
+      if(!d || !d.ok || !d.news || !d.news.length) return;
+      var items = d.news.slice().reverse();
+      items.forEach(function(n){
+        var key = 'dyn-' + n.id;
+        var fecha = '';
+        try{ fecha = new Date(n.created_at).toLocaleDateString('es-PR', {timeZone:'America/Puerto_Rico', day:'numeric', month:'long', year:'numeric'}); }catch(e){}
+        var paras = String(n.texto || '').split(String.fromCharCode(10)).map(function(p){ return p.trim(); }).filter(function(p){ return p.length; }).map(function(p){ return '<p>' + escHtmlN(p) + '</p>'; }).join('');
+        NEWS[key] = {img: n.foto, alt: n.titulo, tag: 'Noticia', date: fecha, title: n.titulo, body: paras};
+        var art = document.createElement('article');
+        art.className = 'news-card';
+        art.setAttribute('data-news', key); art.setAttribute('tabindex', '0'); art.setAttribute('role', 'button');
+        art.setAttribute('aria-haspopup', 'dialog'); art.setAttribute('aria-label', 'Leer la noticia: ' + n.titulo);
+        art.innerHTML = '<div class="news-photo"><img alt=""></div><div class="news-teaser"><div class="news-meta"><span class="tag"><span>Noticia</span></span><span class="news-date"></span></div><h3></h3><span class="news-more">Leer la noticia <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>';
+        var im = art.querySelector('img'); im.src = n.foto; im.alt = n.titulo;
+        art.querySelector('.news-date').textContent = fecha;
+        art.querySelector('h3').textContent = n.titulo;
+        art.addEventListener('click', function(){ openNews(key); });
+        art.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openNews(key); } });
+        nTrack.insertBefore(art, nTrack.firstChild);
+      });
+      nBuild(); nGo(0);
+    }).catch(function(){});
   }
 })();
 </script>

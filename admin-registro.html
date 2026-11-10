@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Esmeraldas — Registros Tryout (Privado)</title>
+<title>Esmeraldas — Panel Privado</title>
 <meta name="robots" content="noindex, nofollow">
 <style>
 :root{
@@ -56,18 +56,31 @@ input:focus{outline:none; border-color:var(--dorado);}
 .topbar{display:flex; justify-content:space-between; align-items:center; margin:18px 0 4px;}
 .topbar h1{margin:0;}
 a.tel{color:var(--dorado2); text-decoration:none; font-weight:700;}
+.tabs{display:flex; gap:8px; margin:16px 0 4px;}
+.tab{flex:1; background:var(--surface2); border:1px solid var(--line); color:var(--muted);
+  border-radius:12px; padding:12px; font-size:14px; font-weight:800; font-family:inherit; cursor:pointer;}
+.tab.on{background:linear-gradient(135deg,var(--rojo2),var(--rojo)); color:#fff; border-color:transparent;}
+.tab-badge{display:inline-block; background:var(--dorado); color:#14100a; border-radius:99px; padding:1px 8px; font-size:11px; margin-left:6px;}
+.pill.est-nuevo{color:var(--dorado2); border-color:rgba(216,177,102,.55);}
+.pill.est-contactado{color:#7db8ff; border-color:rgba(125,184,255,.5);}
+.pill.est-completado{color:var(--ok); border-color:rgba(55,214,122,.5);}
+.pill.est-cancelado{color:var(--rojo2); border-color:rgba(232,38,74,.5);}
+.btn-mini{background:transparent; border:1px solid var(--line); color:var(--text);
+  padding:8px 12px; font-size:12.5px; border-radius:10px; cursor:pointer; font-family:inherit; font-weight:700;}
+.btn-mini:hover{border-color:var(--dorado);}
+a.wa{color:var(--ok); text-decoration:none; font-weight:700;}
 </style>
 </head>
 <body>
 <header class="top">
-  <div class="t">ESMERALDAS DE BARCELONETA<small>REGISTROS DE TRYOUT — PANEL PRIVADO</small></div>
+  <div class="t">ESMERALDAS DE BARCELONETA<small>PANEL PRIVADO — REGISTROS Y TIENDA</small></div>
 </header>
 <div class="wrap">
 
   <!-- LOGIN -->
   <div id="loginView">
     <h1>Entrar</h1>
-    <p class="sub">Panel privado de registros del tryout. La información de las jugadoras no es pública.</p>
+    <p class="sub">Panel privado del equipo: registros del tryout y órdenes de la tienda. Esta información no es pública.</p>
     <div class="card">
       <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username">
       <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password">
@@ -79,9 +92,14 @@ a.tel{color:var(--dorado2); text-decoration:none; font-weight:700;}
   <!-- PANEL -->
   <div id="panelView" class="hidden">
     <div class="topbar">
-      <h1>Registros</h1>
+      <h1>Panel</h1>
       <button class="btn-ghost" id="logoutBtn">Salir</button>
     </div>
+    <div class="tabs">
+      <button class="tab on" id="tabBtnRegs">Registros Tryout</button>
+      <button class="tab" id="tabBtnOrds">Pedidos Tienda<span class="tab-badge hidden" id="ordBadge">0</span></button>
+    </div>
+    <div id="tabRegs">
     <p class="sub">Cuántas jugadoras se han registrado y el perfil de cada una.</p>
     <div class="summary">
       <div class="sum"><div class="v" id="sumTotal">–</div><div class="l">Registradas</div></div>
@@ -94,6 +112,22 @@ a.tel{color:var(--dorado2); text-decoration:none; font-weight:700;}
     </div>
     <input type="text" id="filterTxt" placeholder="Buscar por nombre, pueblo o posición...">
     <div id="regsList"></div>
+    </div>
+    <div id="tabOrds" class="hidden">
+    <p class="sub">Órdenes de la tienda. Contacta al cliente para confirmar disponibilidad, pago y entrega, y marca el estado de cada orden.</p>
+    <div class="summary">
+      <div class="sum"><div class="v" id="ordTotal">–</div><div class="l">Órdenes</div></div>
+      <div class="sum"><div class="v" id="ordPend">–</div><div class="l">Pendientes</div></div>
+      <div class="sum"><div class="v" id="ordPiezas">–</div><div class="l">Piezas</div></div>
+      <div class="sum"><div class="v" id="ordComp">–</div><div class="l">Completadas</div></div>
+    </div>
+    <div class="card">
+      <h2>Por artículo (piezas)</h2>
+      <div id="artList"></div>
+    </div>
+    <input type="text" id="ordFilterTxt" placeholder="Buscar por nombre, artículo o número de orden...">
+    <div id="ordsList"></div>
+    </div>
   </div>
 
 </div>
@@ -145,11 +179,21 @@ function showPanel(){
   $("loginView").classList.add("hidden");
   $("panelView").classList.remove("hidden");
   loadRegs();
+  loadOrders();
 }
 $("loginBtn").addEventListener("click", doLogin);
 $("loginPass").addEventListener("keydown", e=>{ if(e.key === "Enter") doLogin(); });
 $("logoutBtn").addEventListener("click", logout);
 $("filterTxt").addEventListener("input", renderRegs);
+$("ordFilterTxt").addEventListener("input", renderOrders);
+$("tabBtnRegs").addEventListener("click", () => showTab("regs"));
+$("tabBtnOrds").addEventListener("click", () => showTab("ords"));
+function showTab(which){
+  $("tabRegs").classList.toggle("hidden", which !== "regs");
+  $("tabOrds").classList.toggle("hidden", which !== "ords");
+  $("tabBtnRegs").classList.toggle("on", which === "regs");
+  $("tabBtnOrds").classList.toggle("on", which === "ords");
+}
 
 function fmtDate(iso){
   try{
@@ -202,6 +246,90 @@ function renderRegs(){
       if(!confirm("¿Borrar este registro?")) return;
       btn.disabled = true;
       try{ await api("/api/admin/tryouts/" + btn.getAttribute("data-del"), {method:"DELETE"}); loadRegs(); }
+      catch(e){ btn.disabled = false; }
+    });
+  });
+}
+
+/* ---------- Pedidos de la tienda ---------- */
+let ORDS = [];
+const EST_LABEL = {nuevo:"Nuevo", contactado:"Contactado", completado:"Completado", cancelado:"Cancelado"};
+
+async function loadOrders(){
+  try{
+    const d = await api("/api/admin/orders");
+    if(!d.ok) throw new Error("err");
+    ORDS = d.orders || [];
+    $("ordTotal").textContent = d.total;
+    $("ordPend").textContent = d.pendientes;
+    $("ordPiezas").textContent = d.piezas;
+    $("ordComp").textContent = d.completados;
+    const badge = $("ordBadge");
+    badge.textContent = d.pendientes;
+    badge.classList.toggle("hidden", !d.pendientes);
+    const art = d.byArticulo || {};
+    const keys = Object.keys(art).sort((a,b)=>art[b]-art[a]);
+    $("artList").innerHTML = keys.length
+      ? keys.map(k=>'<div class="posrow"><span>'+esc(k)+'</span><b>'+art[k]+'</b></div>').join("")
+      : '<div class="empty">Todavía no hay órdenes.</div>';
+    renderOrders();
+  }catch(e){
+    $("ordsList").innerHTML = '<div class="empty">No se pudieron cargar las órdenes.</div>';
+  }
+}
+
+function waLink(tel){
+  let dig = String(tel || "").replace(/[^0-9]/g, "");
+  if(dig.length === 10) dig = "1" + dig;
+  return dig ? "https://wa.me/" + dig : "";
+}
+
+function renderOrders(){
+  const q = ($("ordFilterTxt").value || "").toLowerCase().trim();
+  const list = ORDS.filter(o => !q || (o.nombre+" "+o.articulo+" "+(o.numero||"")+" "+o.email).toLowerCase().includes(q));
+  if(!list.length){
+    $("ordsList").innerHTML = '<div class="empty">' + (ORDS.length ? "Sin resultados para esa búsqueda." : "Todavía no hay órdenes.") + '</div>';
+    return;
+  }
+  $("ordsList").innerHTML = list.map(o => {
+    const wa = waLink(o.telefono);
+    let acts = "";
+    if(o.estado !== "contactado" && o.estado !== "completado" && o.estado !== "cancelado")
+      acts += '<button class="btn-mini" data-est="contactado" data-id="' + o.id + '">Marcar contactado</button>';
+    if(o.estado !== "completado" && o.estado !== "cancelado")
+      acts += '<button class="btn-mini" data-est="completado" data-id="' + o.id + '">Completar</button>';
+    if(o.estado !== "cancelado")
+      acts += '<button class="btn-mini" data-est="cancelado" data-id="' + o.id + '">Cancelar</button>';
+    if(o.estado === "cancelado")
+      acts += '<button class="btn-mini" data-est="nuevo" data-id="' + o.id + '">Reactivar</button>';
+    return '<div class="reg">' +
+      '<div class="rh"><span class="rn">' + esc(o.numero || ("#" + o.id)) + ' — ' + esc(o.nombre) + '</span><span class="rt">' + esc(fmtDate(o.created_at)) + '</span></div>' +
+      '<div class="rd"><b>Artículo:</b> ' + esc(o.articulo) + ' · <b>Color:</b> ' + esc(o.color) + ' · <b>Tamaño:</b> ' + esc(o.size) + ' · <b>Cantidad:</b> ' + esc(o.cantidad) + '<br>' +
+      '<b>Teléfono:</b> <a class="tel" href="tel:' + esc(String(o.telefono).replace(/[^0-9+]/g,"")) + '">' + esc(o.telefono) + '</a>' +
+      (wa ? ' · <a class="wa" target="_blank" rel="noopener" href="' + wa + '">WhatsApp</a>' : '') + '<br>' +
+      '<b>Correo:</b> <a class="tel" href="mailto:' + esc(o.email) + '">' + esc(o.email) + '</a></div>' +
+      '<div class="rf"><span class="pill est-' + esc(o.estado) + '">' + esc(EST_LABEL[o.estado] || o.estado) + '</span>' +
+      '<span style="display:flex; gap:8px; flex-wrap:wrap;">' + acts +
+      '<button class="btn-danger" data-delord="' + o.id + '">Borrar</button></span></div>' +
+    '</div>';
+  }).join("");
+  $("ordsList").querySelectorAll("[data-est]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      try{
+        await api("/api/admin/orders/" + btn.getAttribute("data-id"), {
+          method: "PATCH", headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({estado: btn.getAttribute("data-est")})
+        });
+        loadOrders();
+      }catch(e){ btn.disabled = false; }
+    });
+  });
+  $("ordsList").querySelectorAll("[data-delord]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      if(!confirm("¿Borrar esta orden?")) return;
+      btn.disabled = true;
+      try{ await api("/api/admin/orders/" + btn.getAttribute("data-delord"), {method:"DELETE"}); loadOrders(); }
       catch(e){ btn.disabled = false; }
     });
   });

@@ -295,13 +295,15 @@ section.block.alt{background:linear-gradient(180deg,var(--negro) 0,var(--negro2)
 .pm-receipt .rc-row{display:flex;justify-content:space-between;gap:1rem;padding:.48rem 0;border-bottom:1px dashed #c9c9c9;font-size:.93rem;color:#1b1b1b}
 .pm-receipt .rc-row span{color:#6d6d6d}
 .pm-receipt .rc-note{color:#555;font-size:.88rem;line-height:1.55;margin:.95rem 0 0;text-align:center}
+.pm-receipt .rc-dep{margin:.9rem 0 0;font-size:.92rem;font-weight:800;text-align:center;color:#111;border:1.5px dashed #9a9a9a;padding:.6rem .5rem;line-height:1.45}
 #printReceipt{display:none}
-@media print{html,body{background:#fff!important}body>*{display:none!important}#printReceipt{display:block!important;background:#fff!important;color:#000;font-family:Georgia,serif;padding:28px 24px;min-height:100vh;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-#printReceipt h2{margin:0 0 2px;font-size:22px;text-align:center}#printReceipt .pr-sub{color:#444;font-size:13px;margin-bottom:14px;text-align:center;border-bottom:2px dashed #999;padding-bottom:12px}
+@media print{@page{size:80mm auto;margin:0}html,body{background:#fff!important}body>*{display:none!important}#printReceipt{display:block!important;background:#fff!important;color:#000;font-family:Georgia,serif;width:74mm;margin:0 auto;padding:5mm 3mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#printReceipt h2{margin:0 0 2px;font-size:17px;text-align:center}#printReceipt .pr-sub{color:#444;font-size:11px;margin-bottom:10px;text-align:center;border-bottom:2px dashed #999;padding-bottom:8px}
 #printReceipt table{width:100%;border-collapse:collapse}
-#printReceipt td{border-bottom:1px solid #bbb;padding:7px 4px;font-size:14px}
+#printReceipt td{border-bottom:1px solid #bbb;padding:5px 2px;font-size:11.5px}
 #printReceipt td:first-child{color:#444;width:38%}
-#printReceipt .pr-note{margin-top:14px;font-size:13px;color:#333;line-height:1.5}}
+#printReceipt .pr-dep{margin-top:10px;font-size:11.5px;font-weight:bold;text-align:center;border:1.5px dashed #888;padding:7px 5px;line-height:1.45}
+#printReceipt .pr-note{margin-top:10px;font-size:10.5px;color:#333;line-height:1.5;text-align:center}}
 
 /* registro tryout */
 .reg-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:1.2rem;align-items:stretch}
@@ -824,6 +826,7 @@ footer small{color:#77777f;display:block;margin-top:.4rem;line-height:1.7}
         <div class="rc-num" id="rcNum">ESM-0000</div>
         <div id="rcRows"></div>
         <p class="rc-note">Guarda este comprobante. Nuestro equipo te contactar&aacute; para confirmar tu orden y coordinar el pago y la entrega.</p>
+        <p class="rc-dep">Toda orden requiere un dep&oacute;sito del 50% del costo</p>
         <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.1rem">
           <button type="button" class="btn btn-rojo" id="rcPrint"><span>Guardar comprobante</span></button>
           <button type="button" class="mini-btn" id="rcClose" style="flex:1">Listo</button>
@@ -966,7 +969,7 @@ footer small{color:#77777f;display:block;margin-top:.4rem;line-height:1.7}
           document.getElementById('rcRows').innerHTML=rows.map(function(rw){return '<div class="rc-row"><span>'+rw[0]+'</span><b>'+rw[1]+'</b></div>'}).join('');
           document.getElementById('printReceipt').innerHTML='<h2>Esmeraldas de Barceloneta</h2><div class="pr-sub">Comprobante de orden de tienda</div><table>'+
             rows.map(function(rw){return '<tr><td>'+rw[0]+'</td><td><b>'+rw[1]+'</b></td></tr>'}).join('')+
-            '</table><p class="pr-note">Guarda este comprobante. Nuestro equipo te contactará al '+data.telefono+' para confirmar tu orden y coordinar el pago y la entrega.</p>';
+            '</table><p class="pr-dep">TODA ORDEN REQUIERE UN DEP&Oacute;SITO DEL 50% DEL COSTO</p><p class="pr-note">Guarda este comprobante. Nuestro equipo te contactará al '+data.telefono+' para confirmar tu orden y coordinar el pago y la entrega.</p>';
           document.getElementById('pmOrder').classList.remove('show');
           var rc=document.getElementById('pmReceipt');rc.classList.add('show');
           setTimeout(function(){rc.scrollIntoView({behavior:'smooth',block:'nearest'})},60);

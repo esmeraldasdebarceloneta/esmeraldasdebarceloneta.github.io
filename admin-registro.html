@@ -120,6 +120,7 @@ a.wa{color:var(--ok); text-decoration:none; font-weight:700;}
       <div class="sum"><div class="v" id="ordPend">–</div><div class="l">Pendientes</div></div>
       <div class="sum"><div class="v" id="ordPiezas">–</div><div class="l">Piezas</div></div>
       <div class="sum"><div class="v" id="ordComp">–</div><div class="l">Completadas</div></div>
+      <div class="sum"><div class="v" id="ordMonto">–</div><div class="l">Total en órdenes</div></div>
     </div>
     <div class="card">
       <h2>Por artículo (piezas)</h2>
@@ -264,6 +265,7 @@ async function loadOrders(){
     $("ordPend").textContent = d.pendientes;
     $("ordPiezas").textContent = d.piezas;
     $("ordComp").textContent = d.completados;
+    $("ordMonto").textContent = "$" + Number(d.monto || 0).toFixed(2);
     const badge = $("ordBadge");
     badge.textContent = d.pendientes;
     badge.classList.toggle("hidden", !d.pendientes);
@@ -305,6 +307,7 @@ function renderOrders(){
     return '<div class="reg">' +
       '<div class="rh"><span class="rn">' + esc(o.numero || ("#" + o.id)) + ' — ' + esc(o.nombre) + '</span><span class="rt">' + esc(fmtDate(o.created_at)) + '</span></div>' +
       '<div class="rd"><b>Artículo:</b> ' + esc(o.articulo) + ' · <b>Color:</b> ' + esc(o.color) + ' · <b>Tamaño:</b> ' + esc(o.size) + ' · <b>Cantidad:</b> ' + esc(o.cantidad) + '<br>' +
+      (o.total !== null && o.total !== undefined ? '<b>Total:</b> $' + Number(o.total).toFixed(2) + ' · <b>Depósito (50%):</b> $' + Number(o.deposito || (o.total/2)).toFixed(2) + '<br>' : '') +
       '<b>Teléfono:</b> <a class="tel" href="tel:' + esc(String(o.telefono).replace(/[^0-9+]/g,"")) + '">' + esc(o.telefono) + '</a>' +
       (wa ? ' · <a class="wa" target="_blank" rel="noopener" href="' + wa + '">WhatsApp</a>' : '') + '<br>' +
       '<b>Correo:</b> <a class="tel" href="mailto:' + esc(o.email) + '">' + esc(o.email) + '</a></div>' +

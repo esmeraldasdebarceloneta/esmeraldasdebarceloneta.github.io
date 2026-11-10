@@ -73,14 +73,14 @@ a.wa{color:var(--ok); text-decoration:none; font-weight:700;}
 </head>
 <body>
 <header class="top">
-  <div class="t">ESMERALDAS DE BARCELONETA<small>PANEL PRIVADO — REGISTROS Y TIENDA</small></div>
+  <div class="t">ESMERALDAS DE BARCELONETA<small>PANEL PRIVADO — REGISTROS, TIENDA Y NOTICIAS</small></div>
 </header>
 <div class="wrap">
 
   <!-- LOGIN -->
   <div id="loginView">
     <h1>Entrar</h1>
-    <p class="sub">Panel privado del equipo: registros del tryout y órdenes de la tienda. Esta información no es pública.</p>
+    <p class="sub">Panel privado del equipo: registros del tryout, órdenes de la tienda y publicación de noticias. Esta información no es pública.</p>
     <div class="card">
       <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username">
       <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password">
@@ -98,6 +98,7 @@ a.wa{color:var(--ok); text-decoration:none; font-weight:700;}
     <div class="tabs">
       <button class="tab on" id="tabBtnRegs">Registros Tryout</button>
       <button class="tab" id="tabBtnOrds">Pedidos Tienda<span class="tab-badge hidden" id="ordBadge">0</span></button>
+      <button class="tab" id="tabBtnNews">Noticias</button>
     </div>
     <div id="tabRegs">
     <p class="sub">Cuántas jugadoras se han registrado y el perfil de cada una.</p>
@@ -128,6 +129,20 @@ a.wa{color:var(--ok); text-decoration:none; font-weight:700;}
     </div>
     <input type="text" id="ordFilterTxt" placeholder="Buscar por nombre, artículo o número de orden...">
     <div id="ordsList"></div>
+    </div>
+    <div id="tabNews" class="hidden">
+    <p class="sub">Publica noticias en la página: sube la foto, escribe el título y el texto, y sale al momento en la cinta de Noticias. Las más recientes salen primero.</p>
+    <div class="card">
+      <h2>Publicar noticia</h2>
+      <input type="text" id="nwTitulo" placeholder="Título de la noticia" maxlength="140">
+      <textarea id="nwTexto" placeholder="Texto de la noticia (el caption completo que se lee al abrirla)" rows="6" maxlength="6000" style="width:100%; background:var(--surface2); border:1.5px solid var(--line); border-radius:10px; color:var(--text); padding:12px; font-size:15px; font-family:inherit; margin-bottom:10px; resize:vertical;"></textarea>
+      <label style="display:block; font-size:13px; color:var(--muted); margin-bottom:6px;">Foto de la noticia</label>
+      <input type="file" id="nwFoto" accept="image/*">
+      <img id="nwPreview" class="hidden" alt="Vista previa de la foto" style="width:100%; max-height:260px; object-fit:cover; border-radius:10px; margin-bottom:10px;">
+      <div class="err" id="nwErr"></div>
+      <button class="btn" id="nwPublish" style="width:100%;">Publicar noticia</button>
+    </div>
+    <div id="newsList"></div>
     </div>
   </div>
 
@@ -189,11 +204,15 @@ $("filterTxt").addEventListener("input", renderRegs);
 $("ordFilterTxt").addEventListener("input", renderOrders);
 $("tabBtnRegs").addEventListener("click", () => showTab("regs"));
 $("tabBtnOrds").addEventListener("click", () => showTab("ords"));
+$("tabBtnNews").addEventListener("click", () => showTab("news"));
 function showTab(which){
   $("tabRegs").classList.toggle("hidden", which !== "regs");
   $("tabOrds").classList.toggle("hidden", which !== "ords");
+  $("tabNews").classList.toggle("hidden", which !== "news");
   $("tabBtnRegs").classList.toggle("on", which === "regs");
   $("tabBtnOrds").classList.toggle("on", which === "ords");
+  $("tabBtnNews").classList.toggle("on", which === "news");
+  if(which === "news") loadNews();
 }
 
 function fmtDate(iso){
@@ -337,6 +356,94 @@ function renderOrders(){
     });
   });
 }
+
+/* ---------- Noticias ---------- */
+let NEWS = [];
+let nwFotoData = "";
+
+$("nwFoto").addEventListener("change", () => {
+  const f = $("nwFoto").files && $("nwFoto").files[0];
+  nwFotoData = "";
+  $("nwPreview").classList.add("hidden");
+  if(!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1080;
+      let w = img.naturalWidth, h = img.naturalHeight;
+      const sc = Math.min(1, MAX / Math.max(w, h));
+      w = Math.round(w * sc); h = Math.round(h * sc);
+      const cv = document.createElement("canvas");
+      cv.width = w; cv.height = h;
+      cv.getContext("2d").drawImage(img, 0, 0, w, h);
+      nwFotoData = cv.toDataURL("image/jpeg", 0.82);
+      $("nwPreview").src = nwFotoData;
+      $("nwPreview").classList.remove("hidden");
+    };
+    img.src = rd.result;
+  };
+  rd.readAsDataURL(f);
+});
+
+async function loadNews(){
+  try{
+    const d = await api("/api/admin/news");
+    if(!d.ok) throw new Error("err");
+    NEWS = d.news || [];
+    renderNews();
+  }catch(e){ /* sesion vencida ya maneja el logout */ }
+}
+
+function renderNews(){
+  if(!NEWS.length){
+    $("newsList").innerHTML = '<div class="empty">Todavía no hay noticias publicadas desde el panel.</div>';
+    return;
+  }
+  $("newsList").innerHTML = NEWS.map(n =>
+    '<div class="reg">' +
+      '<div class="rh"><span class="rn">' + esc(n.titulo) + '</span><span class="rt">' + esc(fmtDate(n.created_at)) + '</span></div>' +
+      '<img src="' + n.foto + '" alt="" style="width:100%; max-height:200px; object-fit:cover; border-radius:10px; margin-top:8px;">' +
+      '<div class="rd">' + esc(String(n.texto || "").slice(0, 220)) + (String(n.texto || "").length > 220 ? '…' : '') + '</div>' +
+      '<div class="rf"><span></span><button class="btn-danger" data-delnews="' + n.id + '">Borrar</button></div>' +
+    '</div>'
+  ).join("");
+  $("newsList").querySelectorAll("[data-delnews]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      if(!confirm("¿Borrar esta noticia? Saldrá de la página.")) return;
+      btn.disabled = true;
+      try{ await api("/api/admin/news/" + btn.getAttribute("data-delnews"), {method:"DELETE"}); loadNews(); }
+      catch(e){ btn.disabled = false; }
+    });
+  });
+}
+
+$("nwPublish").addEventListener("click", async () => {
+  const titulo = $("nwTitulo").value.trim();
+  const texto = $("nwTexto").value.trim();
+  $("nwErr").textContent = "";
+  if(titulo.length < 3){ $("nwErr").textContent = "Escribe el título de la noticia."; return; }
+  if(texto.length < 3){ $("nwErr").textContent = "Escribe el texto de la noticia."; return; }
+  if(!nwFotoData){ $("nwErr").textContent = "Sube la foto de la noticia."; return; }
+  const btn = $("nwPublish");
+  btn.disabled = true; btn.textContent = "Publicando...";
+  try{
+    const d = await api("/api/admin/news", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({titulo, texto, foto: nwFotoData})
+    });
+    if(!d.ok) throw new Error(d.error || "No se pudo publicar");
+    $("nwTitulo").value = ""; $("nwTexto").value = ""; $("nwFoto").value = "";
+    nwFotoData = ""; $("nwPreview").classList.add("hidden");
+    btn.textContent = "¡Publicada! Ya está en la página";
+    loadNews();
+    setTimeout(() => { btn.textContent = "Publicar noticia"; }, 2600);
+  }catch(e){
+    $("nwErr").textContent = e.message || "No se pudo publicar. Inténtalo de nuevo.";
+  }finally{
+    btn.disabled = false;
+  }
+});
 
 if(localStorage.getItem("esmeraldas_admin_token")) showPanel();
 </script>
